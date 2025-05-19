@@ -125,6 +125,22 @@
       saveToLocal();
       renderTabs();
       renderTable();
+  // Googleスプレッドシートに送信
+  fetch("https://script.google.com/macros/s/AKfycbzergpiIW8pr5-bkMNGaqkylL3sqYMSEgF0PuPM8yha/dev", {
+    method: "POST",
+    body: JSON.stringify({
+      date,
+      weekday: document.getElementById("weekday").value,
+      weather: document.getElementById("weather").value,
+      permit: document.getElementById("permit").value,
+      company: document.getElementById("company").value,
+      plate: `札幌 ${document.getElementById("plate_num1").value}${document.getElementById("plate_kana").value}${document.getElementById("plate_num2").value}`,
+      type: document.getElementById("type").value,
+      count: parseInt(document.getElementById("count").value),
+      cubic: getCubicMeter(document.getElementById("type").value, parseInt(document.getElementById("count").value)).toFixed(1)
+    })
+  }).then(res => res.text()).then(txt => console.log("GASレスポンス:", txt));
+
     }
     function renderTabs() {
       const monthTab = document.getElementById("month-tabs");
