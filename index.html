@@ -126,8 +126,11 @@
       renderTabs();
       renderTable();
   // Googleスプレッドシートに送信
-  fetch("https://script.google.com/macros/s/AKfycbzvLMmwLXOfpsjqkSPW510oymwe1d4dknecvSqciwv_xwiqe3THm9jeWTMLGVKSETlUA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzvLMmw-LXOfpsjqkSPW510oymwe1d4dknecvSqciwv_xwiqe3THm9jeWTMLGVKSETlUA/exec", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       date,
       weekday: document.getElementById("weekday").value,
@@ -211,8 +214,6 @@
       link.click();
     }
     window.onload = () => { renderTabs(); renderTable(); };
-<!-- この行はGitに認識させるための変更です -->
-
   </script>
 </body>
 </html>
