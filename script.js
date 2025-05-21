@@ -125,13 +125,13 @@ function downloadCSV() {
   link.click();
 }
 
-function downloadPDF() {
-  const { jsPDF } = window.jspdf;
+window.downloadPDF = function () {
+  const jsPDF = window.jspdf.jsPDF;
   const doc = new jsPDF();
 
   doc.addFileToVFS("NotoSansJP-Regular.ttf", window.jspdfNoto);
   doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-  doc.setFont("NotoSansJP");
+  doc.setFont("NotoSansJP", "normal");
 
   const inputDate = document.getElementById("date").value;
   if (!inputDate) {
@@ -162,9 +162,9 @@ function downloadPDF() {
     startY: 25,
     head: [["許可番号", "搬入社名", "車番", "車種", "台数", "立米数"]],
     body: tableData,
-    styles: { fontSize: 10 },
-    headStyles: { font: "NotoSansJP" },
-    bodyStyles: { font: "NotoSansJP" }
+    styles: { fontSize: 10, font: "NotoSansJP", fontStyle: "normal" },
+    headStyles: { font: "NotoSansJP", fontStyle: "normal" },
+    bodyStyles: { font: "NotoSansJP", fontStyle: "normal" }
   });
 
   doc.save(`${yyyy}${mm}${dd}_日報.pdf`);
