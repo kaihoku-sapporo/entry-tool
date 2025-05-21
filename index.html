@@ -37,8 +37,13 @@
     }
   </style>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@3.5.25/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://unpkg.com/jspdf-fonts@1.0.2/lib/japanese/noto.js"></script>
 
 </head>
 <body>
@@ -216,7 +221,51 @@ fetch("https://script.google.com/macros/s/AKfycbzKo3zSkOYIfO7Te7gtQ4LJU3M4bD9sY2
       });
     }
     
+    
     function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // フォント登録（NotoSans）
+      doc.addFileToVFS("NotoSansJP-Regular-normal.ttf", window.jspdfNoto);
+      doc.addFont("NotoSansJP-Regular-normal.ttf", "NotoSansJP", "normal");
+      doc.setFont("NotoSansJP");
+
+      const inputDate = document.getElementById("date").value;
+      if (!inputDate) {
+        alert("日付を選択してください");
+        return;
+      }
+      const dateObj = new Date(inputDate);
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      const weekdayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdayNames[dateObj.getDay()];
+      const weather = document.getElementById("weather")?.value || "";
+
+      doc.setFontSize(14);
+      doc.text(`${yyyy}年${mm}月${dd}日（${weekday}） 天気：${weather}`, 10, 15);
+
+      const filteredEntries = entries.filter(e => {
+        const date = e[0];
+        return date.startsWith(currentMonthFilter) && (currentDayFilter === "" || date === currentDayFilter);
+      });
+
+      const tableData = filteredEntries.map(e => [
+        e[3], e[4], e[5], e[6], e[7], e[8]
+      ]);
+
+      doc.autoTable({
+        startY: 25,
+        head: [["許可番号", "搬入社名", "車番", "車種", "台数", "立米数"]],
+        body: tableData,
+        styles: { fontSize: 10 }
+      });
+
+      doc.save(`${yyyy}${mm}${dd}_日報.pdf`);
+    }
+ {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
