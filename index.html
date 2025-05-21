@@ -82,10 +82,18 @@
   <button onclick="downloadCSV()">CSV出力</button>
 
   <script>
-    const permitToCompany = {
-      "5001": "清和建設株式会社", "5002": "道央建設工業株式会社", "5007": "丸高北進建設株式会社",
-      "5008": "株式会社剛伸", "5009": "株式会社古田配管工業所", "5010": "協友建設工業株式会社", "5013": "丸宮藤田建設工業"
-    };
+    let permitToCompany = {};
+
+fetch("permit_list.json")
+  .then(res => res.json())
+  .then(data => {
+    permitToCompany = data;
+  });
+
+function autoFillCompany() {
+  const permit = document.getElementById("permit").value;
+  document.getElementById("company").value = permitToCompany[permit] || "";
+}
     const months = ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11"];
     let entries = JSON.parse(localStorage.getItem("entries") || "[]");
     let currentMonthFilter = "2025-05";
