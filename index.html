@@ -36,6 +36,9 @@
       color: white;
     }
   </style>
+  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@3.5.25/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://unpkg.com/jspdf-fonts@1.0.2/lib/japanese/noto.js"></script>
 </head>
 <body>
   <h2>搬入記録 入力フォーム</h2>
@@ -82,9 +85,6 @@
   <button onclick="downloadCSV()">CSV出力</button>
   <button onclick="downloadPDF()">PDF出力</button>
 
-  <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://unpkg.com/jspdf-autotable@3.5.25/dist/jspdf.plugin.autotable.min.js"></script>
-  <script src="https://unpkg.com/jspdf-fonts@1.0.2/lib/japanese/noto.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
