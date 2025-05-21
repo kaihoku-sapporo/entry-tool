@@ -222,7 +222,53 @@ fetch("https://script.google.com/macros/s/AKfycbzKo3zSkOYIfO7Te7gtQ4LJU3M4bD9sY2
     }
     
     
+    
     function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // 正しいフォント登録と適用（文字化け防止）
+      doc.addFileToVFS("NotoSansJP-Regular.ttf", window.jspdfNoto);
+      doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
+      doc.setFont("NotoSansJP");
+
+      const inputDate = document.getElementById("date").value;
+      if (!inputDate) {
+        alert("日付を選択してください");
+        return;
+      }
+      const dateObj = new Date(inputDate);
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      const weekdayNames = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdayNames[dateObj.getDay()];
+      const weather = document.getElementById("weather")?.value || "";
+
+      doc.setFontSize(14);
+      doc.text(`${yyyy}年${mm}月${dd}日（${weekday}） 天気：${weather}`, 10, 15);
+
+      const filteredEntries = entries.filter(e => {
+        const date = e[0];
+        return date.startsWith(currentMonthFilter) && (currentDayFilter === "" || date === currentDayFilter);
+      });
+
+      const tableData = filteredEntries.map(e => [
+        e[3], e[4], e[5], e[6], e[7], e[8]
+      ]);
+
+      doc.autoTable({
+        startY: 25,
+        head: [["許可番号", "搬入社名", "車番", "車種", "台数", "立米数"]],
+        body: tableData,
+        styles: { fontSize: 10 },
+        headStyles: { font: "NotoSansJP" },
+        bodyStyles: { font: "NotoSansJP" }
+      });
+
+      doc.save(`${yyyy}${mm}${dd}_日報.pdf`);
+    }
+ {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
