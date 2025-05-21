@@ -1,6 +1,6 @@
 
-const months = ["2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11"];
-let entries = [];
+const months = ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11"];
+let entries = JSON.parse(localStorage.getItem("entries") || "[]");
 let currentMonthFilter = "2025-05";
 let currentDayFilter = "";
 
@@ -13,11 +13,11 @@ function autoFillCompany() {
 }
 
 function updateWeekday() {
-  const val = document.getElementById("date").value;
-  if (!val) return;
-  const d = new Date(val);
+  const dateVal = document.getElementById("date").value;
+  if (!dateVal) return;
+  const date = new Date(dateVal);
   const days = ['日','月','火','水','木','金','土'];
-  document.getElementById("weekday").value = days[d.getDay()];
+  document.getElementById("weekday").value = days[date.getDay()];
 }
 
 function getCubicMeter(type, count) {
@@ -25,35 +25,28 @@ function getCubicMeter(type, count) {
   return rates[type] * count;
 }
 
+function saveToLocal() {
+  localStorage.setItem("entries", JSON.stringify(entries));
+}
+
 function addEntry() {
   const date = document.getElementById("date").value;
   if (!date) return;
-  const data = {
+  const row = [
     date,
-    weekday: document.getElementById("weekday").value,
-    weather: document.getElementById("weather").value,
-    permit: document.getElementById("permit").value,
-    company: document.getElementById("company").value,
-    plate: "札幌 " + document.getElementById("plate_num1").value + document.getElementById("plate_kana").value + document.getElementById("plate_num2").value,
-    type: document.getElementById("type").value,
-    count: parseInt(document.getElementById("count").value),
-    cubic: getCubicMeter(document.getElementById("type").value, parseInt(document.getElementById("count").value)).toFixed(1)
-  };
-  fetch("https://script.google.com/macros/s/AKfycbwrcIrSnaNIk17HjAvdxymq872KKDTKY5Xzu8PqAYlPEejdzzyp0y09YoqiN_R5-ujOuw/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  }).then(() => loadEntries());
-}
-
-function loadEntries() {
-  fetch("https://script.google.com/macros/s/AKfycbwrcIrSnaNIk17HjAvdxymq872KKDTKY5Xzu8PqAYlPEejdzzyp0y09YoqiN_R5-ujOuw/exec")
-    .then(res => res.json())
-    .then(data => {
-      entries = data;
-      renderTabs();
-      renderTable();
-    });
+    document.getElementById("weekday").value,
+    document.getElementById("weather").value,
+    document.getElementById("permit").value,
+    document.getElementById("company").value,
+    `札幌 ${document.getElementById("plate_num1").value}${document.getElementById("plate_kana").value}${document.getElementById("plate_num2").value}`,
+    document.getElementById("type").value,
+    parseInt(document.getElementById("count").value),
+    getCubicMeter(document.getElementById("type").value, parseInt(document.getElementById("count").value)).toFixed(1)
+  ];
+  entries.push(row);
+  saveToLocal();
+  renderTabs();
+  renderTable();
 }
 
 function renderTabs() {
@@ -99,7 +92,17 @@ function renderTable() {
         tr.appendChild(td);
       });
       const td = document.createElement("td");
-      td.textContent = "—";
+      const btn = document.createElement("span");
+      btn.textContent = "削除";
+      btn.style.color = "blue";
+      btn.style.cursor = "pointer";
+      btn.onclick = () => {
+        entries.splice(i, 1);
+        saveToLocal();
+        renderTabs();
+        renderTable();
+      };
+      td.appendChild(btn);
       tr.appendChild(td);
       tbody.appendChild(tr);
     }
@@ -119,5 +122,6 @@ function downloadCSV() {
 }
 
 window.onload = () => {
-  loadEntries();
+  renderTabs();
+  renderTable();
 };
