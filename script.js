@@ -1,10 +1,11 @@
 
+const months = ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11"];
+let entries = JSON.parse(localStorage.getItem("entries") || "[]");
+let currentMonthFilter = "2025-05";
+let currentDayFilter = "";
+
 let permitToCompany = {};
-fetch("permit_list.json")
-  .then(res => res.json())
-  .then(data => {
-    permitToCompany = data;
-  });
+fetch("permit_list.json").then(res => res.json()).then(data => { permitToCompany = data; });
 
 function autoFillCompany() {
   const permit = document.getElementById("permit").value;
@@ -18,11 +19,6 @@ function updateWeekday() {
   const days = ['日','月','火','水','木','金','土'];
   document.getElementById("weekday").value = days[date.getDay()];
 }
-
-const months = ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11"];
-let entries = JSON.parse(localStorage.getItem("entries") || "[]");
-let currentMonthFilter = "2025-05";
-let currentDayFilter = "";
 
 function getCubicMeter(type, count) {
   const rates = { "10t": 6.0, "8t": 5.0, "4t": 2.0 };
@@ -123,51 +119,6 @@ function downloadCSV() {
   link.href = URL.createObjectURL(blob);
   link.download = new Date().toISOString().slice(0, 10) + "_搬入記録.csv";
   link.click();
-}
-
-window.downloadPDF = function () {
-  const jsPDF = window.jspdf.jsPDF;
-  const doc = new jsPDF();
-
-  doc.addFileToVFS("NotoSansJP-Regular.ttf", window.jspdfNoto);
-  doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
-  doc.setFont("NotoSansJP", "normal");
-
-  const inputDate = document.getElementById("date").value;
-  if (!inputDate) {
-    alert("日付を選択してください");
-    return;
-  }
-  const dateObj = new Date(inputDate);
-  const yyyy = dateObj.getFullYear();
-  const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const dd = String(dateObj.getDate()).padStart(2, '0');
-  const weekdayNames = ['日', '月', '火', '水', '木', '金', '土'];
-  const weekday = weekdayNames[dateObj.getDay()];
-  const weather = document.getElementById("weather")?.value || "";
-
-  doc.setFontSize(14);
-  doc.text(`${yyyy}年${mm}月${dd}日（${weekday}） 天気：${weather}`, 10, 15);
-
-  const filteredEntries = entries.filter(e => {
-    const date = e[0];
-    return date.startsWith(currentMonthFilter) && (currentDayFilter === "" || date === currentDayFilter);
-  });
-
-  const tableData = filteredEntries.map(e => [
-    e[3], e[4], e[5], e[6], e[7], e[8]
-  ]);
-
-  doc.autoTable({
-    startY: 25,
-    head: [["許可番号", "搬入社名", "車番", "車種", "台数", "立米数"]],
-    body: tableData,
-    styles: { fontSize: 10, font: "NotoSansJP", fontStyle: "normal" },
-    headStyles: { font: "NotoSansJP", fontStyle: "normal" },
-    bodyStyles: { font: "NotoSansJP", fontStyle: "normal" }
-  });
-
-  doc.save(`${yyyy}${mm}${dd}_日報.pdf`);
 }
 
 window.onload = () => {
